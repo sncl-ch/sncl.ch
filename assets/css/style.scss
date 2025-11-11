@@ -31,7 +31,7 @@
   --green-lighter: color-mix(in srgb, var(--green), #fff 10%);
   --green-darker: color-mix(in srgb, var(--green), #000 20%);
 
-  --deep-blue-rgb: 0, 37, 64;
+  --deep-blue-rgb: 0, 18, 36;
   --deep-blue: rgb(var(--deep-blue-rgb));
 
   --blue-rgb: 24, 90, 157;
@@ -88,17 +88,18 @@
   --header-border-width: 0px;
   --h1-font-size: 2em;
 }
+// */
 
 /* ==================
    GRID & BREAKPOINTS
    ================== */
 $breakpoints: (
-  "xs": 360px,
-  "s": 480px,
-  "m": 768px,
-  "l": 992px,
-  "xl": 1200px,
-  "xxl": 1440px
+  "xs": 360,
+  "s": 480,
+  "m": 768,
+  "l": 992,
+  "xl": 1200,
+  "xxl": 1440
 );
 
 @mixin grid-media-query($breakpoint, $direction: up) {
@@ -109,7 +110,7 @@ $breakpoints: (
       $limit: max-width;
       $value: $value - 0.2;
     }
-    @media only screen and (#{$limit}: #{$value}) {
+    @media only screen and (#{$limit}: #{$value}px) {
       @content;
     }
   }
@@ -309,9 +310,6 @@ body {
       list-style-type: none;
     }
   }
-  .display-inline {
-    display: inline;
-  }
   ul.social_links {
     margin: 0;
     padding: 0;
@@ -346,7 +344,7 @@ body {
     align-items: center;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    li {
+    > li {
       list-style-type: none;
       margin: 0;
       padding: 0 12px 24px 12px;
@@ -356,7 +354,7 @@ body {
       @include grid_media_query(m) {
         flex-basis: 25%;
       }
-      a {
+      > a {
         display: grid;
         place-items: center;
         background: var(--background-light);
@@ -379,11 +377,14 @@ body {
       }
     }
   }
+  button,
   .button,
   a.button {
+    background: transparent;
     color: var(--font-color);
     font-weight: 900;
     text-transform: uppercase;
+    border: 0px;
     border-radius: 0.25em;
     padding: 12px;
     display: inline-block;
@@ -443,6 +444,9 @@ body {
   }
   .hidden {
     display: none !important;
+  }
+  .display-inline {
+    display: inline;
   }
   .col--text-around-img {
     padding: 0;
@@ -582,6 +586,9 @@ body {
       right: 24px;
       cursor: pointer;
     }
+    .button {
+      width: 100%;
+    }
   }
 
   div.map-iframe {
@@ -686,8 +693,7 @@ $slide-images: (
 
 @for $i from 1 through length($breakpoints) {
   $name: nth(map_keys($breakpoints), $i);
-  $breakpoint: nth(map_values($breakpoints), $i);
-  $slide-width: $breakpoint;
+  $slide-width: 1600;
   @if $i + 1 <= length($breakpoints) {
     $slide-width: nth(map_values($breakpoints), $i + 1);
   }
@@ -737,15 +743,24 @@ $slide-images: (
     width: 100%;
 
     .content {
+      &.nav-above {
+        #banner {
+          &.full-height {
+            margin-top: 56px;
+            height: calc(100vh - 56px);
+          }
+        }
+        &:after {
+          display: none;
+        }
+      }
       margin: 0 auto;
       background-color: var(--background);
       width: 100%;
 
       #banner {
         &.full-height {
-          // full height minus header
-          height: calc(100vh - 56px);
-          margin-top: 56px;
+          height: 100vh;
         }
         /* Parallax Banner */
         &.parallax {
@@ -901,11 +916,15 @@ $slide-images: (
                   bottom: -100px;
                   left: 50%;
                   width: 1em;
-                  content: "↓";
+                  content: "⌄";
                   margin-left: -0.5em;
                   cursor: pointer;
-                  &:hover {
+                  transition: bottom 0.5s linear;
+                }
+                &:hover {
+                  &:after {
                     color: var(--light);
+                    bottom: -110px;
                   }
                 }
               }
@@ -936,6 +955,7 @@ $slide-images: (
 
                 a {
                   display: inline-block;
+                  line-height: 0px;
                   color: var(--font-color-inverted);
                   margin: 12px 18px;
                   transition: color 0.3s ease-in-out;
@@ -964,8 +984,8 @@ $slide-images: (
                     border-radius: 50%;
                     svg.icon {
                       padding: 16px;
-                      height: calc(36px + 32px);
-                      width: calc(36px + 32px);
+                      height: 64px;
+                      width: 64px;
                     }
                     &:hover {
                       background-color: var(--light-15);
@@ -1087,6 +1107,40 @@ $slide-images: (
 /* Mobile menu and header */
 @include grid-media-query(m, down) {
   .container {
+    /* Mobile top header */
+    // on top of page stays not fixed
+    &.banner-intersecting {
+      .wrapper .mobile-navbar {
+        position: absolute;
+        background: none;
+        backdrop-filter: none;
+        box-shadow: none;
+        .title.hide-on-top {
+          display: none;
+        }
+      }
+      &.inverted-top {
+        .wrapper .mobile-navbar {
+          label.toggler {
+            .navicon {
+              background: var(--font-color-inverted-hover);
+              &,
+              &:before,
+              &:after {
+                background: var(--font-color-inverted-hover);
+              }
+            }
+            svg.icon {
+              color: var(--font-color-inverted-hover);
+            }
+          }
+          .title a {
+            color: var(--font-color-inverted);
+          }
+        }
+      }
+    }
+
     /* Mobile menu */
     nav {
       transition: transform 0.3s ease-in-out;
@@ -1176,33 +1230,6 @@ $slide-images: (
       }
     }
 
-    /* Mobile top header */
-    // on top of page stays not fixed
-    &.banner-intersecting {
-      .wrapper .mobile-navbar {
-        position: absolute;
-        background: none;
-        backdrop-filter: none;
-        box-shadow: none;
-        .title.hide-on-top {
-          display: none;
-        }
-        label.toggler.inverted {
-          .navicon {
-            background: var(--font-color-inverted-hover);
-            &,
-            &:before,
-            &:after {
-              background: var(--font-color-inverted-hover);
-            }
-          }
-          svg.icon {
-            color: var(--font-color-inverted-hover);
-          }
-        }
-      }
-    }
-
     /* Mobile fix header (scrolled) */
     .wrapper .mobile-navbar {
       min-width: 300px;
@@ -1235,6 +1262,12 @@ $slide-images: (
         }
         span {
           font-weight: 300;
+        }
+        svg.icon {
+          vertical-align: middle;
+          height: 36px;
+          width: 36px;
+          margin: 0px 12px 10px 0px;
         }
       }
 
@@ -1332,8 +1365,10 @@ $slide-images: (
         background: none;
         backdrop-filter: none;
         box-shadow: none;
+      }
 
-        &.inverted-top {
+      &.inverted-top {
+        nav {
           .title svg.icon {
             color: var(--font-color-inverted);
           }
@@ -1370,8 +1405,9 @@ $slide-images: (
           }
         }
       }
+
       // add an overlay under the transparent navbar
-      #banner {
+      .content {
         position: relative;
         &:after {
           position: absolute;
