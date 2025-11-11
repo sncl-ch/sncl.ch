@@ -31,7 +31,7 @@
   --green-lighter: color-mix(in srgb, var(--green), #fff 10%);
   --green-darker: color-mix(in srgb, var(--green), #000 20%);
 
-  --deep-blue-rgb: 0, 18, 36;
+  --deep-blue-rgb: 0, 9, 18;
   --deep-blue: rgb(var(--deep-blue-rgb));
 
   --blue-rgb: 24, 90, 157;
@@ -1268,6 +1268,9 @@ $slide-images: (
           height: 36px;
           width: 36px;
           margin: 0px 12px 10px 0px;
+          &.sncl_logo {
+            width:84px;
+          }
         }
       }
 
@@ -1413,13 +1416,13 @@ $slide-images: (
           position: absolute;
           pointer-events: none;
           content: "";
-          height: 100px;
+          height: 160px;
           width: 100%;
           top: 0;
           left: 0;
           background: linear-gradient(
             to bottom,
-            rgba(var(--deep-blue-rgb), 0.65) 0%,
+            rgba(var(--deep-blue-rgb), 0.5) 0%,
             rgba(var(--deep-blue-rgb), 0.1) 60%,
             transparent 90%
           );
@@ -1590,7 +1593,8 @@ $slide-images: (
               }
             }
           }
-          &:hover {
+          &:hover,
+          &:focus {
             & > a,
             & > span {
               outline: 1px solid var(--borders);

@@ -28,7 +28,7 @@
   --green: rgb(var(--green-rgb));
   --green-lighter: color-mix(in srgb, var(--green), #fff 10%);
   --green-darker: color-mix(in srgb, var(--green), #000 20%);
-  --deep-blue-rgb: 0, 18, 36;
+  --deep-blue-rgb: 0, 9, 18;
   --deep-blue: rgb(var(--deep-blue-rgb));
   --blue-rgb: 24, 90, 157;
   --blue: rgb(var(--blue-rgb));
@@ -1450,6 +1450,9 @@ body div.map-iframe.interact:before, body div.map-iframe.interact:after {
     width: 36px;
     margin: 0px 12px 10px 0px;
   }
+  .container .wrapper .mobile-navbar .title svg.icon.sncl_logo {
+    width: 84px;
+  }
   .container .wrapper .mobile-navbar label.toggler {
     position: relative;
     cursor: pointer;
@@ -1566,11 +1569,11 @@ body div.map-iframe.interact:before, body div.map-iframe.interact:after {
     position: absolute;
     pointer-events: none;
     content: "";
-    height: 100px;
+    height: 160px;
     width: 100%;
     top: 0;
     left: 0;
-    background: linear-gradient(to bottom, rgba(var(--deep-blue-rgb), 0.65) 0%, rgba(var(--deep-blue-rgb), 0.1) 60%, transparent 90%);
+    background: linear-gradient(to bottom, rgba(var(--deep-blue-rgb), 0.5) 0%, rgba(var(--deep-blue-rgb), 0.1) 60%, transparent 90%);
   }
   .container nav {
     display: block;
@@ -1733,15 +1736,15 @@ body div.map-iframe.interact:before, body div.map-iframe.interact:after {
     background-color: var(--green-lighter);
     color: var(--light);
   }
-  .container nav > ul > li:hover > a, .container nav > ul > li:hover > span {
+  .container nav > ul > li:hover > a, .container nav > ul > li:hover > span, .container nav > ul > li:focus > a, .container nav > ul > li:focus > span {
     outline: 1px solid var(--borders);
   }
-  .container nav > ul > li:hover:not(.closed) ul {
+  .container nav > ul > li:hover:not(.closed) ul, .container nav > ul > li:focus:not(.closed) ul {
     display: block;
     opacity: 1;
     transform: scale(1);
   }
-  .container nav > ul > li:hover:not(.closed).submenu a:after, .container nav > ul > li:hover:not(.closed).submenu span:after {
+  .container nav > ul > li:hover:not(.closed).submenu a:after, .container nav > ul > li:hover:not(.closed).submenu span:after, .container nav > ul > li:focus:not(.closed).submenu a:after, .container nav > ul > li:focus:not(.closed).submenu span:after {
     transform: rotate(225deg);
     margin: 0 0 0px 8px;
   }
