@@ -1044,7 +1044,7 @@ body div.map-iframe.interact:before, body div.map-iframe.interact:after {
   background-image: var(--slide-1);
   perspective: 1px;
   animation: imageSlider 30s linear infinite 0s;
-  background-position: center;
+  background-position: 60% 25%;
 }
 .container .wrapper .content #banner.slider.running {
   animation-play-state: running;
