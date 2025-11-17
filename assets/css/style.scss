@@ -1,3 +1,99 @@
+$breakpoints: (
+  "min": 300,
+  "xs": 360,
+  "s": 480,
+  "m": 768,
+  "l": 992,
+  "xl": 1200,
+  "xxl": 1440
+);
+
+$containers: (
+  "min": auto,
+  "xs": auto,
+  "s": auto,
+  "m": auto,
+  "l": calc(960px - 96px),
+  "xl": 1024px,
+  "xxl": 1200px
+);
+
+@mixin grid-media-query($breakpoint, $direction: up) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $limit: min-width;
+    $value: map-get($breakpoints, $breakpoint);
+    @if $direction == down {
+      $limit: max-width;
+      $value: $value - 0.2;
+    }
+    @media only screen and (#{$limit}: #{$value}px) {
+      @content;
+    }
+  }
+}
+
+/* SNCL SLIDER */
+$slide-images: (
+  "sncl_1966.jpg",
+  "sncl_wakesurf.jpg",
+  "sncl_wakeboard.jpg",
+  "sncl_group.jpg",
+  "sncl_sunset.jpg"
+);
+
+:root {
+  $img-path: "//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/";
+  @for $i from 1 through length($slide-images) {
+    $slide-image: nth($slide-images, $i);
+    --slide-#{$i}: url("#{$img-path}#{$slide-image}");
+  }
+}
+
+@for $i from 1 through length($breakpoints) {
+  $name: nth(map_keys($breakpoints), $i);
+  $slide-width: 1600;
+  @if $i + 1 <= length($breakpoints) {
+    $slide-width: nth(map_values($breakpoints), $i + 1);
+  }
+
+  @include grid_media_query($name) {
+    :root {
+      $img-path: "//ik.imagekit.io/sncl/tr:w-#{$slide-width},h-600,c-at_least,f-webp/header/";
+      @for $i from 1 through length($slide-images) {
+        $slide-image: nth($slide-images, $i);
+        --slide-#{$i}: url("#{$img-path}#{$slide-image}");
+      }
+    }
+  }
+}
+
+@keyframes imageSlider {
+  $slide-start: 1;
+  @for $i from 1 through length($slide-images) {
+    $slide-num: $slide-start + ($i - 1);
+    @if $slide-num > length($slide-images) {
+      $slide-num: $slide-num - length($slide-images);
+    }
+    $next-num: $slide-num + 1;
+    @if $next-num > length($slide-images) {
+      $next-num: $next-num - length($slide-images);
+    }
+    $duration: 100 / length($slide-images);
+    $from: ($i - 1) * $duration;
+    $to: $i * $duration - 5;
+
+    #{$from}% {
+      background-image: var(--slide-#{$slide-num});
+    }
+    #{$to}% {
+      background-image: var(--slide-#{$slide-num}), var(--slide-#{$next-num});
+    }
+  }
+  100% {
+    background-image: var(--slide-#{$slide-start});
+  }
+}
+
 /* ================
    COLORS AND SIZES
    ================ */
@@ -84,38 +180,13 @@
   --nav-bg: light-dark(var(--light-75), var(--dark-75));
 
   --font-color-inverted: var(--light);
-
-  // --header-border-width: 0px;
   // --h1-font-size: 2em;
 }
 // */
 
-/* ==================
-   GRID & BREAKPOINTS
-   ================== */
-$breakpoints: (
-  "xs": 360px,
-  "s": 480px,
-  "m": 768px,
-  "l": 992px,
-  "xl": 1200px,
-  "xxl": 1440px
-);
-
-@mixin grid-media-query($breakpoint, $direction: up) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $limit: min-width;
-    $value: map-get($breakpoints, $breakpoint);
-    @if $direction == down {
-      $limit: max-width;
-      $value: $value - 0.2;
-    }
-    @media only screen and (#{$limit}: #{$value}) {
-      @content;
-    }
-  }
-}
-
+/* =====================
+   GRID & RESPONSIVENESS
+   ===================== */
 @mixin device-type($namespace: "") {
   $prefix: unquote(".") + $namespace;
 
@@ -141,6 +212,15 @@ $breakpoints: (
     display: table;
     clear: both;
   }
+  &.no-gutter {
+    > .col {
+      padding: 0;
+      .row {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  }
   .col {
     float: left;
     box-sizing: border-box;
@@ -150,6 +230,47 @@ $breakpoints: (
     left: auto;
     right: auto;
     width: 100%;
+
+    &.col--text-around-img {
+      padding: 0;
+      p {
+        padding: calc(var(--gutter) / 2);
+        &:first-of-type {
+          margin-top: 0;
+        }
+      }
+      img {
+        filter: blur(5px);
+        &.visible {
+          filter: none;
+          transition: transform 0.2s;
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        max-width: calc(100% - var(--gutter));
+        margin: 0 calc(var(--gutter) / 2);
+        @include grid-media-query(xs) {
+          margin: calc(var(--gutter) / 2) var(--gutter) calc(var(--gutter) / 2)
+            calc(var(--gutter) / 2);
+          max-width: calc((100% / 2) - var(--gutter));
+          float: left;
+          &.right {
+            float: right;
+            margin: calc(var(--gutter) / 2) calc(var(--gutter) / 2)
+              calc(var(--gutter) / 2) var(--gutter);
+          }
+        }
+        @include grid-media-query(s) {
+          &:not(.large) {
+            max-width: calc((100% / 3) - var(--gutter));
+          }
+        }
+      }
+    }
   }
 }
 
@@ -200,7 +321,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-width: 300px;
+  min-width: #{map-get($breakpoints, min)}px;
   font-size: var(--font-size-mobile);
   @include grid-media-query(s) {
     font-size: var(--font-size);
@@ -247,7 +368,7 @@ body {
   h6 {
     font-weight: 300;
     // text-align: center;
-    margin: 24px 0;
+    margin: var(--gutter) 0;
     span {
       font-weight: 900;
     }
@@ -256,7 +377,7 @@ body {
     font-size: 1.7em;
   }
   p {
-    margin: 12px 0;
+    margin: calc(var(--gutter) / 2) 0;
   }
 
   .sncl {
@@ -323,8 +444,6 @@ body {
         text-decoration: none;
         svg.icon {
           color: var(--icon-color);
-          height: 36px;
-          width: 36px;
           vertical-align: middle;
           margin-bottom: 8px;
         }
@@ -448,60 +567,31 @@ body {
   .display-inline {
     display: inline;
   }
-  .col--text-around-img {
-    padding: 0;
-    p {
-      padding: 12px;
-      &:first-child {
-        margin-top: 0;
-      }
-    }
-    img {
-      filter: blur(5px);
-      &.visible {
-        filter: none;
-        transition: transform 0.2s;
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-      max-width: calc(100% - 24px);
-      margin: 0 12px;
-      @include grid-media-query(xs) {
-        margin: 12px 24px 12px 12px;
-        max-width: calc((100% / 2) - 24px);
-        float: left;
-        &.right {
-          float: right;
-          margin: 12px 12px 12px 24px;
-        }
-      }
-      @include grid-media-query(s) {
-        &:not(.large) {
-          max-width: calc((100% / 3) - 24px);
-        }
-      }
-    }
-  }
   .news {
     .archived {
       display: none;
     }
   }
-  svg title {
-    display: none;
+  svg {
+    title {
+      display: none;
+    }
+    &.icon {
+      height: 36px;
+      width: 36px;
+      vertical-align: middle;
+      &.highlight {
+        color: var(--orange);
+        width: 128px;
+        height: 128px;
+      }
+      &.sncl_logo {
+        height: 36px;
+        width: 84px;
+      }
+    }
   }
-  svg.icon.highlight {
-    color: var(--orange);
-  }
-  svg.sncl_logo {
-    height: 36px;
-    width: 84px;
-    vertical-align: middle;
-  }
+
   .toggle {
     *,
     *:before,
@@ -590,7 +680,6 @@ body {
       width: 100%;
     }
   }
-
   div.map-iframe {
     height: 250px;
     position: relative;
@@ -674,65 +763,6 @@ body {
   }
 }
 
-/* SNCL SLIDER */
-$slide-images: (
-  "sncl_1966.jpg",
-  "sncl_wakesurf.jpg",
-  "sncl_wakeboard.jpg",
-  "sncl_group.jpg",
-  "sncl_sunset.jpg"
-);
-
-:root {
-  $img-path: "//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/";
-  @for $i from 1 through length($slide-images) {
-    $slide-image: nth($slide-images, $i);
-    --slide-#{$i}: url("#{$img-path}#{$slide-image}");
-  }
-}
-
-@for $i from 1 through length($breakpoints) {
-  $name: nth(map_keys($breakpoints), $i);
-  $breakpoint: nth(map_values($breakpoints), $i);
-  $slide-width: $breakpoint;
-  @if $i + 1 <= length($breakpoints) {
-    $slide-width: nth(map_values($breakpoints), $i + 1);
-  }
-
-  @include grid_media_query($name) {
-    :root {
-      $img-path: "//ik.imagekit.io/sncl/tr:w-#{$slide-width},h-600,c-at_least,f-webp/header/";
-      @for $i from 1 through length($slide-images) {
-        $slide-image: nth($slide-images, $i);
-        --slide-#{$i}: url("#{$img-path}#{$slide-image}");
-      }
-    }
-  }
-}
-
-@keyframes imageSlider {
-  @for $i from 0 through length($slide-images)-1 {
-    $slide-num: $i + 1;
-    $next-num: 1;
-    @if $i + 2 <= length($slide-images) {
-      $next-num: $i + 2;
-    }
-    $duration: 100 / length($slide-images);
-    $from: $i * $duration;
-    $to: ($i + 1) * $duration - 5;
-
-    #{$from}% {
-      background-image: var(--slide-#{$slide-num});
-    }
-    #{$to}% {
-      background-image: var(--slide-#{$slide-num}), var(--slide-#{$next-num});
-    }
-  }
-  100% {
-    background-image: var(--slide-1);
-  }
-}
-
 /* PAGE LAYOUT */
 .container {
   input#toggler {
@@ -744,15 +774,24 @@ $slide-images: (
     width: 100%;
 
     .content {
+      &.nav-above {
+        #banner {
+          &.full-height {
+            margin-top: 56px;
+            height: calc(100vh - 56px);
+          }
+        }
+        &:after {
+          display: none;
+        }
+      }
       margin: 0 auto;
       background-color: var(--background);
       width: 100%;
 
       #banner {
         &.full-height {
-          // full height minus header
-          // margin-top: 56px;
-          height: 100vh; // calc(100vh - 56px);
+          height: 100vh;
         }
         /* Parallax Banner */
         &.parallax {
@@ -796,7 +835,7 @@ $slide-images: (
           background-image: var(--slide-1);
           perspective: 1px;
           animation: imageSlider 30s linear infinite 0s;
-          background-position: center;
+          background-position: 60% 25%;
           &.running {
             animation-play-state: running;
           }
@@ -810,6 +849,19 @@ $slide-images: (
             .inner {
               opacity: 0.01;
             }
+          }
+          &:before {
+            //background-image: var(--slide-1);
+            position: absolute;
+            background: red;
+            top: 0;
+            left: 0;
+            //content: "";
+            background-size: cover;
+            width: 100%;
+            height: 100%;
+            animation: imageSliderOver 30s linear infinite 0s;
+            background-position: 60% 25%;
           }
           &:after {
             transition: opacity 0.5s ease-in-out;
@@ -864,7 +916,7 @@ $slide-images: (
           color: var(--font-color-inverted);
           display: inline-block;
           padding: 0;
-          min-width: 275px;
+          min-width: #{calc(map-get($breakpoints, min)-var(--gutter))}px;
           @include grid-media-query(s) {
             min-width: 90vw;
           }
@@ -878,17 +930,21 @@ $slide-images: (
           header {
             position: relative;
             display: inline-block;
-            border-bottom: solid var(--header-border-width);
-            border-top: solid var(--header-border-width);
-            margin: 36px 0;
+
+            margin: calc(var(--gutter) * 3) 0;
             @include grid-media-query(s) {
-              margin-top: 12px;
+              margin-top: calc(var(--gutter) / 2);
             }
             padding: 3px 0;
-
-            h1 {
+            &.bordered {
               border-bottom: solid var(--header-border-width);
               border-top: solid var(--header-border-width);
+              h1 {
+                border-bottom: solid var(--header-border-width);
+                border-top: solid var(--header-border-width);
+              }
+            }
+            h1 {
               font-size: var(--h1-font-size);
               font-weight: 900;
               letter-spacing: 0.2em;
@@ -929,15 +985,13 @@ $slide-images: (
             font-weight: 500;
             letter-spacing: 0.1em;
             margin: 0;
-            text-transform: uppercase;
             &.small {
-              font-size: 0.9em;
-              text-transform: none;
+              font-size: 0.8em;
             }
           }
           // icons list in the banner
           footer {
-            padding: 24px 0 0 0;
+            padding: var(--gutter) 0 0 0;
             ul {
               margin: 0;
               padding: 0;
@@ -949,13 +1003,11 @@ $slide-images: (
                   display: inline-block;
                   line-height: 0px;
                   color: var(--font-color-inverted);
-                  margin: 12px 18px;
+                  margin: calc(var(--gutter) / 2) calc(var(--gutter) / 3 * 2);
                   transition: color 0.3s ease-in-out;
 
                   svg.icon {
                     display: inline-block;
-                    height: 36px;
-                    width: 36px;
                     color: var(--font-color-inverted);
                     transition: fill 0.3s ease-in-out;
                     margin: 0;
@@ -969,7 +1021,7 @@ $slide-images: (
                   }
 
                   @include grid-media-query(m) {
-                    margin: 12px 24px;
+                    margin: calc(var(--gutter) / 2) var(--gutter);
                     transition: background-color 0.3s ease-in-out,
                       outline 0.3s ease-in-out;
                     border: 1px solid var(--font-color-inverted);
@@ -1005,40 +1057,51 @@ $slide-images: (
           }
         }
         section {
+          > h2 {
+            padding: 0 calc(var(--gutter) / 2);
+          }
           margin-top: 1px;
-          padding: 48px 12px;
+          padding: calc(var(--gutter) * 2) calc(var(--gutter) / 2);
           @include grid-media-query(s) {
-            padding: 56px 24px;
+            padding: calc(var(--gutter) * 2.5) calc(var(--gutter) / 2);
+            & > *:not(.full_width) {
+              max-width: map-get($containers, s);
+            }
           }
           @include grid-media-query(m) {
             &:first-of-type {
-              margin-top: 24px;
+              margin-top: var(--gutter);
             }
-            padding: 56px 24px 48px 24px;
+            padding: calc(var(--gutter) * 2.5) var(--gutter)
+              calc(var(--gutter) * 2) var(--gutter);
             &.containered {
-              margin-left: 24px;
-              margin-right: 24px;
+              & > *:not(.full_width) {
+                max-width: map-get($containers, m);
+              }
+              margin-left: var(--gutter);
+              margin-right: var(--gutter);
             }
           }
           @include grid-media-query(l) {
             &.containered,
             & > *:not(.full_width) {
-              max-width: calc(960px - 96px);
+              max-width: map-get($containers, l);
               margin-left: auto;
               margin-right: auto;
             }
           }
           @include grid-media-query(xl) {
-            padding: 56px 36px 48px 36px;
+            padding: calc(var(--gutter) * 2.5) calc(var(--gutter) * 3)
+              calc(var(--gutter) * 2) calc(var(--gutter) * 3);
             &.containered,
             & > *:not(.full_width) {
-              max-width: 1024px;
+              max-width: map-get($containers, xl);
             }
           }
           @include grid-media-query(xxl) {
             &.containered,
             & > *:not(.full_width) {
-              max-width: 1200px;
+              max-width: map-get($containers, xxl);
             }
           }
 
@@ -1062,35 +1125,35 @@ $slide-images: (
               transform: skewY(4deg);
             }
 
-            &.find-me {
+            &.gradient--flat:before {
               background: linear-gradient(
                 180deg,
                 var(--green) 0%,
                 var(--green-lighter) 100%
               );
-              color: var(--font-color-inverted);
+              transform: none;
             }
           }
         }
       }
-      footer {
-        text-align: center;
-        padding: 12px;
-        p {
-          height: 24px;
-          line-height: 24px;
-          small,
-          svg.icon {
-            vertical-align: middle;
-            display: inline-block;
-          }
-        }
+    }
+    footer {
+      text-align: center;
+      padding: calc(var(--gutter) / 2);
+      p {
+        height: 24px;
+        line-height: 24px;
+        small,
         svg.icon {
-          height: 24px;
-          width: 24px;
-          color: var(--font-color);
-          margin-right: 12px;
+          vertical-align: middle;
+          display: inline-block;
         }
+      }
+      svg.icon {
+        height: 24px;
+        width: 24px;
+        color: var(--font-color);
+        margin-right: 12px;
       }
     }
   }
@@ -1099,6 +1162,40 @@ $slide-images: (
 /* Mobile menu and header */
 @include grid-media-query(m, down) {
   .container {
+    /* Mobile top header */
+    // on top of page stays not fixed
+    &.banner-intersecting {
+      .wrapper .mobile-navbar {
+        position: absolute;
+        background: none;
+        backdrop-filter: none;
+        box-shadow: none;
+        .title.hide-on-top {
+          display: none;
+        }
+      }
+      &.inverted-top {
+        .wrapper .mobile-navbar {
+          label.toggler {
+            .navicon {
+              background: var(--font-color-inverted-hover);
+              &,
+              &:before,
+              &:after {
+                background: var(--font-color-inverted-hover);
+              }
+            }
+            svg.icon {
+              color: var(--font-color-inverted-hover);
+            }
+          }
+          .title a {
+            color: var(--font-color-inverted);
+          }
+        }
+      }
+    }
+
     /* Mobile menu */
     nav {
       transition: transform 0.3s ease-in-out;
@@ -1144,7 +1241,7 @@ $slide-images: (
             &:before {
               content: "";
               position: absolute;
-              left: 12px;
+              left: calc(var(--gutter) / 2);
               top: 0;
               height: 1px;
               width: calc(100% - 36px);
@@ -1188,36 +1285,9 @@ $slide-images: (
       }
     }
 
-    /* Mobile top header */
-    // on top of page stays not fixed
-    &.banner-intersecting {
-      .wrapper .mobile-navbar {
-        position: absolute;
-        background: none;
-        backdrop-filter: none;
-        box-shadow: none;
-        .title.hide-on-top {
-          display: none;
-        }
-        label.toggler.inverted {
-          .navicon {
-            background: var(--font-color-inverted-hover);
-            &,
-            &:before,
-            &:after {
-              background: var(--font-color-inverted-hover);
-            }
-          }
-          svg.icon {
-            color: var(--font-color-inverted-hover);
-          }
-        }
-      }
-    }
-
     /* Mobile fix header (scrolled) */
     .wrapper .mobile-navbar {
-      min-width: 300px;
+      min-width: #{map-get($breakpoints, min)}px;
       position: fixed;
       top: 0;
       z-index: 1;
@@ -1230,7 +1300,7 @@ $slide-images: (
       line-height: 56px;
       .title {
         float: right;
-        margin-right: 12px;
+        margin-right: calc(var(--gutter) / 2);
         display: block;
         z-index: 0;
         text-transform: uppercase;
@@ -1256,7 +1326,7 @@ $slide-images: (
         display: block;
         float: left;
         width: 36px;
-        height: 34px;
+        height: 36px;
         margin: 11px 6px;
         border-radius: 5px;
         .navicon {
@@ -1275,7 +1345,7 @@ $slide-images: (
             content: "";
             left: 0px;
             display: block;
-            height: 100%;
+            height: 3px;
             position: absolute;
             transition: transform 0.5s ease-in-out, top 0.5s ease-in-out;
             width: 100%;
@@ -1290,8 +1360,6 @@ $slide-images: (
         svg.icon {
           position: absolute;
           left: 40px;
-          height: 36px;
-          width: 36px;
           margin: 0px 12px 10px 0px;
           color: var(--font-color);
         }
@@ -1344,8 +1412,10 @@ $slide-images: (
         background: none;
         backdrop-filter: none;
         box-shadow: none;
+      }
 
-        &.inverted-top {
+      &.inverted-top {
+        nav {
           .title svg.icon {
             color: var(--font-color-inverted);
           }
@@ -1382,6 +1452,7 @@ $slide-images: (
           }
         }
       }
+
       // add an overlay under the transparent navbar
       .content {
         position: relative;
@@ -1431,12 +1502,6 @@ $slide-images: (
           display: inline-block;
         }
         svg.icon {
-          height: 36px;
-          width: 36px;
-          &.sncl_logo {
-            height: 36px;
-            width: 84px;
-          }
           color: var(--font-color);
           margin: -4px 12px 0 0;
           vertical-align: middle;
