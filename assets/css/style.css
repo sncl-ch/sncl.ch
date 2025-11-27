@@ -1,11 +1,11 @@
 @charset "UTF-8";
 /* SNCL SLIDER */
 :root {
-  --slide-1: url("//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/sncl_1966.jpg");
-  --slide-2: url("//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/sncl_wakesurf.jpg");
-  --slide-3: url("//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/sncl_wakeboard.jpg");
-  --slide-4: url("//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/sncl_group.jpg");
-  --slide-5: url("//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/sncl_sunset.jpg");
+  --slide-1: url("//ik.imagekit.io/sncl/tr:w-300,h-600,c-at_least,f-webp/header/sncl_1966.jpg");
+  --slide-2: url("//ik.imagekit.io/sncl/tr:w-300,h-600,c-at_least,f-webp/header/sncl_wakesurf.jpg");
+  --slide-3: url("//ik.imagekit.io/sncl/tr:w-300,h-600,c-at_least,f-webp/header/sncl_wakeboard.jpg");
+  --slide-4: url("//ik.imagekit.io/sncl/tr:w-300,h-600,c-at_least,f-webp/header/sncl_group.jpg");
+  --slide-5: url("//ik.imagekit.io/sncl/tr:w-300,h-600,c-at_least,f-webp/header/sncl_sunset.jpg");
 }
 
 @media only screen and (min-width: 300px) {
@@ -1152,7 +1152,7 @@ body div.map-iframe.interact:before, body div.map-iframe.interact:after {
   color: var(--font-color-inverted);
   display: inline-block;
   padding: 0;
-  min-width: calc(map-get($breakpoints, min)-var(--gutter))px;
+  min-width: calc(300 - var(--gutter))px;
   text-align: center;
   vertical-align: middle;
 }

@@ -42,7 +42,7 @@ $slide-images: (
 );
 
 :root {
-  $img-path: "//ik.imagekit.io/sncl/tr:w-360,h-600,c-at_least,f-webp/header/";
+  $img-path: "//ik.imagekit.io/sncl/tr:w-#{map-get($breakpoints, min)},h-600,c-at_least,f-webp/header/";
   @for $i from 1 through length($slide-images) {
     $slide-image: nth($slide-images, $i);
     --slide-#{$i}: url("#{$img-path}#{$slide-image}");
@@ -916,7 +916,7 @@ body {
           color: var(--font-color-inverted);
           display: inline-block;
           padding: 0;
-          min-width: #{calc(map-get($breakpoints, min)-var(--gutter))}px;
+          min-width: calc(#{map-get($breakpoints, min)} - var(--gutter))px;
           @include grid-media-query(s) {
             min-width: 90vw;
           }
