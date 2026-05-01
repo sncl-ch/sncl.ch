@@ -857,6 +857,10 @@ body svg.icon.sncl_logo {
   height: 36px;
   width: 84px;
 }
+body img {
+  max-width: 100%;
+  height: auto;
+}
 body .toggle {
   position: relative;
   box-sizing: border-box;
